@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usdb-fetcher"
+version = "0.1.0"
+description = "Fetch a Song from USDB"
+authors = [
+    { name = "pauljako" }
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+  "yt-dlp",
+  "beautifulsoup4",
+  "requests"
+]
+
+[project.scripts]
+usdb-fetcher = "usdb_fetcher.main:main"
+
+[project.urls]
+Homepage = "https://git.pauljako.de/pauljako/usdb-fetcher"
+Issues = "https://git.pauljako.de/pauljako/usdb-fetcher/issues"
