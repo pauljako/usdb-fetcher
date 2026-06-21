@@ -130,6 +130,15 @@ def main():
         sys.exit(1)
 
     titles = search_titles(session_id, input("Enter search term: "))
-    print(titles)
+    if titles is None or len(titles) <= 0:
+        sys.exit(1)
 
-    get_song(session_id, list(titles.keys())[0])
+    titlenum = 1
+    for titleid in list(titles.keys()):
+        title = titles[titleid]
+        print(f"[{titlenum}] {title} (ID: {titleid})")
+        titlenum += 1
+
+    selection = int(input("Enter a selection: "))
+
+    get_song(session_id, list(titles.keys())[selection - 1])
