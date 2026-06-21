@@ -10,6 +10,8 @@ import requests
 URL = "https://usdb.animux.de"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
+BASE_FOLDER = os.path.realpath(os.path.expanduser(os.getenv("USDB_BASE_FOLDER", ".")))
+
 
 def login(user_id, password) -> str | None:
     """Logs the User in and returns a session id"""
@@ -44,7 +46,8 @@ def get_song(session_id: str, song_id: str):
 
     soup = bs4.BeautifulSoup(response.text, "html.parser")
 
-    output_folder = soup.find("h1").string
+    output_name = soup.find("h1").string
+    output_folder = os.path.join(BASE_FOLDER, output_name)
     os.makedirs(output_folder)
 
     original_lyrics = soup.find("textarea", attrs={"name": "txt"}).string
@@ -60,12 +63,12 @@ def get_song(session_id: str, song_id: str):
 
         lyrics += f"{line}\n"
 
-    with open(os.path.join(output_folder, f"{output_folder}.txt"), "wt") as f:
+    with open(os.path.join(output_folder, f"{output_name}.txt"), "wt") as f:
         f.write(lyrics)
 
     urlretrieve(
         URL + f"/data/cover/{song_id}.jpg",
-        os.path.join(output_folder, f"{output_folder}.jpg"),
+        os.path.join(output_folder, f"{output_name}.jpg"),
     )
     
     response = requests.get(
@@ -83,8 +86,8 @@ def get_song(session_id: str, song_id: str):
     if os.system(f"yt-dlp -o '{output_folder}/video.webm' '{yt_link}'") != 0:
         return
 
-    os.system(f"ffmpeg -i '{output_folder}/video.webm' -vcodec h264 -acodec aac '{output_folder}/{output_folder}.mp4'")
-    os.system(f"ffmpeg -i '{output_folder}/video.webm' -vn -acodec mp3 '{output_folder}/{output_folder}.mp3'")
+    os.system(f"ffmpeg -i '{output_folder}/video.webm' -vcodec h264 -acodec aac '{output_folder}/{output_name}.mp4'")
+    os.system(f"ffmpeg -i '{output_folder}/video.webm' -vn -acodec mp3 '{output_folder}/{output_name}.mp3'")
 
 
 def search_titles(session_id: str, search_term: str) -> dict[str, str] | None:
